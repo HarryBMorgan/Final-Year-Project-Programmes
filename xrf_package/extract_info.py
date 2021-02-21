@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# extract_headers.py
+# extract_info.py
 
 # -----------------------------------------------------------------------------
 # Final Year Project - XRF Analysis
@@ -11,12 +11,16 @@
 # These headers are organised into a dictionary and returned to user.
 
 # -----------------------------------------------------------------------------
+# IMPORT
+import numpy as np
+
+# -----------------------------------------------------------------------------
 # CLASSES
 # CREATE A CLASS TO HOLD HEADER DATA.
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
-def extract_data(list):
+def extract_info(list):
 # This function extracts the header information and spectrum data from the
 # input list. The list will have been obtained via the read_emsa_file.py
 # module. a list of the headers and an array of data will be passed to user.
@@ -60,7 +64,7 @@ def extract_data(list, data_loc):
 # This function extracts the data from the list and formats it to type float.
 
     # Read each line after "#SPECTRUM".
-    
+    spectrum_array = np.array(3)
 
     return spectrum_array
 
@@ -127,12 +131,3 @@ if __name__ == "__main__":
     # Print to the user.
     for i in range(len(header_list)):
         print(header_list[i][0], header_list[i][1])
-
-# -----------------------------------------------------------------------------
-# METHOD
-# Read the lines in the list. I guess look for the #.
-# If # is there, take everything up to ":" then strip whitespace.
-# Then take rest from after ":".
-# Strip all whitespace.
-# Try converting to a number.
-# If it fails just hmmm...

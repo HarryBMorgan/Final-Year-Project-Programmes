@@ -17,6 +17,6 @@
 from xrf_package.read_emsa_file import read_emsa_file
 
 # Import extract_headers function.
-from xrf_package.extract_headers import extract_headers
+from xrf_package.extract_info import *
 
 # Import
