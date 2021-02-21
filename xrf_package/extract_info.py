@@ -7,19 +7,32 @@
 
 # -----------------------------------------------------------------------------
 # PROGRAMME DESCRIPTION
-# This module extracts the headers from a list input of type string.
+# This module extracts the headers from a file input.
+# The file extracts the data usig read_emsa_file.py module.
 # These headers are organised into a dictionary and returned to user.
 
 # -----------------------------------------------------------------------------
-# CLASSES
-# CREATE A CLASS TO HOLD HEADER DATA.
+# IMPORT
+from xrf_package.read_emsa_file import read_emsa_file
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
-def extract_info(list):
+def extract_info(dir, file_dir):
 # This function extracts the header information and spectrum data from the
 # input list. The list will have been obtained via the read_emsa_file.py
 # module. a list of the headers and an array of data will be passed to user.
+
+# INPUT: dir = boolean. (if file_fir is directory, dir == True.)
+
+# Check if the input is directory or list.
+# If list, run normally.
+# If it's a directory then call read_emsa_file.py.
+
+    if dir == True:
+        list = read_emsa_file(file_dir)
+
+    else:
+        list = file_dir
 
     header_list, data_loc = __extract_headers__(list)
     spectrum_array = __extract_data__(list, data_loc)
@@ -155,7 +168,7 @@ if __name__ == "__main__":
             "0.5", "1.111", "64", "0.335", "#END : Test"]
 
     # Call the function.
-    header_list, spectrum_data = extract_info(list)
+    header_list, spectrum_data = extract_info(False, list)
 
     # Print to the user.
     for i in range(len(header_list)):
