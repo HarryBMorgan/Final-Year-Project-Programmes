@@ -15,3 +15,4 @@
 
 # Import extract_headers function.
 from xrf_package.extract_info import extract_info
+from xrf_package.locate_header_info import locate_header_info
