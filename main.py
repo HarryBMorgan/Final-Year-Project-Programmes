@@ -1,8 +1,7 @@
-import xrf_package.init as xrf
+import xrf_package.xrf_package as xrf
 
-# Call read function.
-line = xrf.read_emsa_file("EDS_1.emsa")
+# Call read_emsa_file.py.
+lines = xrf.read_emsa_file("EDS_1.emsa")
 
-# Print line list to check the data is there.
-for i in line:
-    print(i)
+# Call extract_headers.py.
+xrf.extract_headers(lines)
