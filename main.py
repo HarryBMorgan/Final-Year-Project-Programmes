@@ -1,10 +1,7 @@
 import xrf_package.xrf_package as xrf
 
-# Call read_emsa_file.py.
-lines = xrf.read_emsa_file("EDS_1.emsa")
-
 # Call extract_info.py to get the headers and data lists.
-header_list, spectrum_data = xrf.extract_info(lines)
+header_list, spectrum_data = xrf.extract_info(True, "EDS_1.emsa")
 
 # Print headers.
 for i in range(len(header_list)):

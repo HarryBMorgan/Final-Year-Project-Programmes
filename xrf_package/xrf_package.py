@@ -13,10 +13,5 @@
 # IMPORT
 # Import the modules and name them accordingly for use in the main.py.
 
-# Import read_emsa_file function.
-from xrf_package.read_emsa_file import read_emsa_file
-
 # Import extract_headers function.
 from xrf_package.extract_info import extract_info
-
-# Import
