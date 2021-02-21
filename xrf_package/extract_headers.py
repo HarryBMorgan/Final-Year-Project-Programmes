@@ -16,75 +16,117 @@
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
+def extract_data(list):
+# This function extracts the header information and spectrum data from the
+# input list. The list will have been obtained via the read_emsa_file.py
+# module. a list of the headers and an array of data will be passed to user.
+
+    header_list, data_loc = extract_headers(list)
+    spectrum_array = extract_data(list, data_loc)
+    return header_list, spectrum_array
+
 def extract_headers(list):
 
     # Read every element in list (represents lines from data file).
+    header_list, spectrum_list = [], []
     for i in range(len(list)):
 
         # Check for "#". This means the element is a header.
         if list[i][0] == "#":
         # Run through the element and seperate header and info then format.
 
-            # Create temp string lists to be extract header & info.
-            header, info = "", ""
+            # Run header extraction subroutine.
+            header_new, info_new = __header_extraction__(list, i)
 
-            # Run through element to extract header name.
-            j = 0
-            while list[i][j] != ":":
+            # Check if header is begining the spectrum data.
+            if "SPECTRUM" in header_new:
 
-                # Append header to header.
-                header += list[i][j]
+                # Set location in list of data. Exit function.
+                data_loc = i
+                break
 
-                # Incriment j.
-                j += 1
+            else:
+            # Not begining of spectrum data, append to header_list.
 
-            # Take info from element.
-            for l in range(j, len(list[i])):
-                # Append info to info.
-                info += list[i][l]
-
-            # Remove ":" from strings.
-            header_new = header.replace(":", "")
-            info_new = info.replace(":", "")
-
-            # Delete header & info from memory (reducing variables).
-            del header, info
-
-            # Trim the whitespace from the header and its info.
-            header = header_new.strip()
-            info = info_new.strip()
-
-            # Try making the info into a float.
-            try:
-
-                # Try converting to float.
-                info_float = float(info)
-
-                # If successful print header & info_float.
-                print(header, info_float)
-
-            except ValueError:
-
-                # If can't convert to float, print header & info.
-                print(header, info)
+                header_list.append([header_new, info_new])
 
         elif list[i][0] != "#":
             pass
 
     # Pass the data to the user.
-    return
+    return header_list, data_loc
+
+def extract_data(list, data_loc):
+# This function extracts the data from the list and formats it to type float.
+
+    # Read each line after "#SPECTRUM".
+    
+
+    return spectrum_array
+
+def __header_extraction__(list, i):
+# This function runs the bullk of the extract_headers module.
+
+    # Create temp string lists to be extract header & info.
+    header, info = "", ""
+
+    # Run through element to extract header name.
+    j = 0
+    while list[i][j] != ":":
+
+        # Append header to header.
+        header += list[i][j]
+
+        # Incriment j.
+        j += 1
+
+    # Take info from element.
+    for k in range(j, len(list[i])):
+        # Append info to info.
+        info += list[i][k]
+
+    # Format header & information.
+    header_new, info_new = __format_header__(header, info)
+    return header_new, info_new
+
+def __format_header__(header, info):
+# This function formats the header and its information by removing any unneeded
+# characters & whitespace. it converts info to other data type where required.
+
+    # Remove ":" from strings.
+    header_no_colon = header.replace(":", "")
+    info_no_colon = info.replace(":", "")
+
+    # Trim the whitespace from the header and its info.
+    header_stripped = header_no_colon.strip()
+    info_stripped = info_no_colon.strip()
+
+    # Try converting the info to type float.
+    try:
+
+        # Try converting to float.
+        info_float = float(info_stripped)
+
+        # If successful return header & info_float.
+        return header, info_float
+
+    except ValueError:
+
+        # If can't convert to float, return header & info.
+        return header, info_stripped
 
 # -----------------------------------------------------------------------------
 # MAIN
 if __name__ == "__main__":
     # Define test input.
-    list = ["#Poop : Yummy!", "##Anna : 69", "0.135,", "#END of : Test"]
+    list = ["#Poop : Yummy!", "##Anna : 21.5", "#SPECTRUM :", "#END : Test"]
 
     # Call the function.
-    data_dict = extract_headers(list)
+    header_list, data_loc = extract_headers(list)
 
     # Print to the user.
-    print(data_dict)
+    for i in range(len(header_list)):
+        print(header_list[i][0], header_list[i][1])
 
 # -----------------------------------------------------------------------------
 # METHOD
