@@ -11,10 +11,6 @@
 # These headers are organised into a dictionary and returned to user.
 
 # -----------------------------------------------------------------------------
-# IMPORT
-import numpy as np
-
-# -----------------------------------------------------------------------------
 # CLASSES
 # CREATE A CLASS TO HOLD HEADER DATA.
 
@@ -25,11 +21,11 @@ def extract_info(list):
 # input list. The list will have been obtained via the read_emsa_file.py
 # module. a list of the headers and an array of data will be passed to user.
 
-    header_list, data_loc = extract_headers(list)
-    spectrum_array = extract_data(list, data_loc)
+    header_list, data_loc = __extract_headers__(list)
+    spectrum_array = __extract_data__(list, data_loc)
     return header_list, spectrum_array
 
-def extract_headers(list):
+def __extract_headers__(list):
 
     # Read every element in list (represents lines from data file).
     header_list, spectrum_list = [], []
@@ -60,13 +56,32 @@ def extract_headers(list):
     # Pass the data to the user.
     return header_list, data_loc
 
-def extract_data(list, data_loc):
+def __extract_data__(list, data_loc):
 # This function extracts the data from the list and formats it to type float.
 
-    # Read each line after "#SPECTRUM".
-    spectrum_array = np.array(3)
+    # Create array to hold data.
+    spectrum_data = []
 
-    return spectrum_array
+    # Run through list from data_loc to end.
+    for i in range(data_loc - 1, len(list)):
+        i += data_loc
+
+        # Set data.
+        data = list[i]
+
+        # Check if "End of Data".
+        if "#" in data:
+            # End of data readings. Exit loop.
+            break
+
+        else:
+            # Format data.
+            data_formatted = __format_data__(data)
+
+            # Append to spectrum_array.
+            spectrum_data.append(data_formatted)
+
+    return spectrum_data
 
 def __header_extraction__(list, i):
 # This function runs the bullk of the extract_headers module.
@@ -119,15 +134,32 @@ def __format_header__(header, info):
         # If can't convert to float, return header & info.
         return header, info_stripped
 
+def __format_data__(data):
+# Formats data and converts it to type float.
+
+    # Remove comma from data string and strip of whitespace.
+    data_no_comma = data.replace(",", "")
+    data_stripped = data_no_comma.strip()
+
+    # Change to type float.
+    data_formatted = float(data_stripped)
+
+    # Return formatted data.
+    return data_formatted
+
 # -----------------------------------------------------------------------------
 # MAIN
 if __name__ == "__main__":
     # Define test input.
-    list = ["#Poop : Yummy!", "##Anna : 21.5", "#SPECTRUM :", "#END : Test"]
+    list = ["#Poop : Yummy!", "##Anna : 21.5", "#SPECTRUM :", \
+            "0.5", "1.111", "64", "0.335", "#END : Test"]
 
     # Call the function.
-    header_list, data_loc = extract_headers(list)
+    header_list, spectrum_data = extract_info(list)
 
     # Print to the user.
     for i in range(len(header_list)):
         print(header_list[i][0], header_list[i][1])
+    
+    # Print information to the user.
+    print(spectrum_array)
