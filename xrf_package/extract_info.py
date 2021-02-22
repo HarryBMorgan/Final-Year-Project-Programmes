@@ -13,7 +13,12 @@
 
 # -----------------------------------------------------------------------------
 # IMPORT
-from xrf_package.read_emsa_file import read_emsa_file
+# There is a need to alter where the read_emsa_file module comes from
+# depending on whether the programme is being used as a module or as a main.
+if __name__ != "__main__":
+    from xrf_package.read_emsa_file import read_emsa_file
+if __name__ == "__main__":
+    from read_emsa_file import read_emsa_file
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
@@ -77,9 +82,8 @@ def __extract_data__(list, data_loc):
     spectrum_data = []
     
     # Run through list from data_loc to end.
-    for i in range(data_loc - 1, len(list)):
-        i += data_loc
-        
+    for i in range(data_loc + 1, len(list)):
+    
         # Set data.
         data = list[i]
         
@@ -176,4 +180,4 @@ if __name__ == "__main__":
         print(header_list[i][0], header_list[i][1])
     
     # Print information to the user.
-    print(spectrum_array)
+    print(spectrum_data)
