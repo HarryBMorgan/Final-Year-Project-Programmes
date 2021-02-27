@@ -19,19 +19,13 @@ def locate_header_info(list, element):
 
     try:
     
-        # Begin looping through list to locate 
-        for i in range(len(list)):
+        position = [val[-1] for i, val in enumerate(list) if val[0] == element]
         
-            if element in list[i][0]:
-                
-                loc_info = list[i]
-                break
-        
-        return loc_info
-
+        return position[0]
+    
     except:
     
-        return "ERROR: No match found for element."
+        print("ERROR: Header not found. Check element input is exact.")
 
 # -----------------------------------------------------------------------------
 # MAIN
@@ -39,9 +33,11 @@ if __name__ == "__main__":
     # Define a test list.
     list = [["#Poop", "Yummy!"], ["##Anna", 21.5], ["#SPECTRUM", \
             "0.5"], ["1.111"], ["64", "0.335"], ["#END", "Test"]]
+
+    for i in list: print(i)
     
     # Call the function.
-    loc_info = locate_header_info(list, "Poop")
+    header_info = locate_header_info(list, "##Anna")
     
     # Print results.
-    print(loc_info)
+    print(header_info)
