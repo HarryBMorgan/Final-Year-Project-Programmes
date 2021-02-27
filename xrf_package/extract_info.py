@@ -12,39 +12,10 @@
 # These headers are organised into a dictionary and returned to user.
 
 # -----------------------------------------------------------------------------
-# IMPORT
-# There is a need to alter where the read_emsa_file module comes from
-# depending on whether the programme is being used as a module or as a main.
-if __name__ != "__main__":
-    from xrf_package.read_emsa_file import read_emsa_file
-if __name__ == "__main__":
-    from read_emsa_file import read_emsa_file
-
-# -----------------------------------------------------------------------------
 # FUNCTIONS
-def extract_info(dir, file_dir):
-# This function extracts the header information and spectrum data from the
-# input list. The list will have been obtained via the read_emsa_file.py
-# module. a list of the headers and an array of data will be passed to user.
-
-# INPUT: dir = boolean. (if file_fir is directory, dir == True.)
-
-# Check if the input is directory or list.
-# If list, run normally.
-# If it's a directory then call read_emsa_file.py.
-    
-    if dir == True:
-        list = read_emsa_file(file_dir)
-    
-    else:
-        list = file_dir
-    
-    header_list, data_loc = __extract_headers__(list)
-    spectrum_array = __extract_data__(list, data_loc)
-    
-    return header_list, spectrum_array
-
-def __extract_headers__(list):
+def extract_headers(list):
+# This function extracts the header information from a .emsa file type. Each
+# line is formatted and stored in a list for output.
     
     # Read every element in list (represents lines from data file).
     header_list, spectrum_list = [], []
@@ -75,8 +46,9 @@ def __extract_headers__(list):
     # Pass the data to the user.
     return header_list, data_loc
 
-def __extract_data__(list, data_loc):
-# This function extracts the data from the list and formats it to type float.
+def extract_data(list, data_loc):
+# This function extracts the data from the .emsa list and formats it to type
+# float. This is then output to the user.
     
     # Create array to hold data.
     spectrum_data = []
@@ -145,12 +117,12 @@ def __format_header__(header, info):
         info_float = float(info_stripped)
         
         # If successful return header & info_float.
-        return header, info_float
+        return header_stripped, info_float
     
     except ValueError:
         
         # If can't convert to float, return header & info.
-        return header, info_stripped
+        return header_stripped, info_stripped
 
 def __format_data__(data):
 # Formats data and converts it to type float.
@@ -172,8 +144,9 @@ if __name__ == "__main__":
     list = ["#Poop : Yummy!", "##Anna : 21.5", "#SPECTRUM :", \
             "0.5", "1.111", "64", "0.335", "#END : Test"]
     
-    # Call the function.
-    header_list, spectrum_data = extract_info(False, list)
+    # Call the functions.
+    header_list, data_loc = extract_headers(list)
+    spectrum_data = extract_data(list, data_loc)
     
     # Print to the user.
     for i in range(len(header_list)):
