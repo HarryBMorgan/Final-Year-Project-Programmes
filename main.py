@@ -15,12 +15,15 @@
 # -----------------------------------------------------------------------------
 # MAIN
 # Import the modules.
-import numpy as np
 import matplotlib.pyplot as plt
 import xrf_package.xrf_package as xrf
 
-# Call extract_info.py module to get the headers and data lists.
-header_list, spectrum_data = xrf.extract_info(True, "EDS_1.emsa")
+# Call read_emsa_file.py module to get the information from the .emsa file.
+line = xrf.read_emsa_file("EDS_1.emsa")
+
+# Call extract_info.py to get header information and data.
+header_list, data_loc = xrf.extract_headers(line)
+spectrum_data = xrf.extract_data(line, data_loc)
 
 # Locate "#XPERCHAN" and "#OFFSET".
 XPERCHAN = xrf.locate_header_info(header_list, "#XPERCHAN")
@@ -29,7 +32,7 @@ OFFSET = xrf.locate_header_info(header_list, "#OFFSET")
 # Create Energy list.
 Energy = []
 for i in range(1, len(spectrum_data) + 1):
-    Energy.append(i * XPERCHAN[-1] + OFFSET[-1])
+    Energy.append(i * XPERCHAN + OFFSET)
 
 # Plot the Energy against the Intensit (spectrum_data).
 plt.plot(Energy, spectrum_data)
