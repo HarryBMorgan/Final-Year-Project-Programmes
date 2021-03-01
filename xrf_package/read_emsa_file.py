@@ -21,13 +21,9 @@ def read_emsa_file(file_name):
 
     # Open data file.
     data_file = open(file_name, "r")
-    
-    # Read the data from the file.
-    # FUTURE DEVELOPMENT IDEA: Sort the headers into a dictionary and the data
-    #                          into an array.
-    line = []
-    for l in data_file:
-        line.append(l.strip())
+
+    # Extract lines into list.
+    line = data_file.readlines()
     
     # Close the data file.
     data_file.close
