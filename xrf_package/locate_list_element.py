@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# locate_header_info.py
+# locate_list_element.py
 
 # -----------------------------------------------------------------------------
 # Final Year Project - XRF Analysis
@@ -12,7 +12,7 @@
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
-def locate_header_info(list, element):
+def locate_list_element(list, element):
 # Search the list for the specified element. Once found it will be returned to
 # the user.
 # WARNING! This module's "element" input is case sensitive.
@@ -25,7 +25,7 @@ def locate_header_info(list, element):
     
     except:
     
-        print("ERROR: Header not found. Check element input is exact.")
+        print("ERROR: Element not found. Check input is exact.")
 
 # -----------------------------------------------------------------------------
 # MAIN
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     for i in list: print(i)
     
     # Call the function.
-    header_info = locate_header_info(list, "##Anna")
+    header_info = locate_list_element(list, "##Anna")
     
     # Print results.
     print(header_info)
