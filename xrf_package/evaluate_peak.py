@@ -14,6 +14,7 @@
 # IMPORTS
 from numpy import linspace
 from scipy.integrate import simps
+from bisect import bisect_right
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
@@ -21,8 +22,8 @@ def peak_energy(X_lim, X_data, Y_data):
 # This function finds the peak energy for the peak defined by the parameters.
     
     # Create X_lim index.
-    a = X_data.index(X_lim[0])
-    b = X_data.index(X_lim[-1])
+    a = bisect_right(X_data, X_lim[0]) - 1
+    b = bisect_right(X_data, X_lim[-1]) - 1
     
     # Find index of max value in Y_data.
     indx = Y_data[a: b].index(max(Y_data[a: b])) + a
@@ -36,8 +37,8 @@ def integrate_peak(X_lim, X_data, Y_data):
 # decide between speed and accuracy for the integral.
 
     # Create X_lim index.
-    a = X_data.index(X_lim[0])
-    b = X_data.index(X_lim[-1])
+    a = bisect_right(X_data, X_lim[0]) - 1
+    b = bisect_right(X_data, X_lim[-1]) - 1
 
     # Remove baseline from Y_data.
     Y_data_lowered = __remove_baseline__(a, b, X_data, Y_data)
