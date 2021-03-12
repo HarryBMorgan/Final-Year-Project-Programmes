@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# read_emsa_file.py
+# read_file.py
 
 # -----------------------------------------------------------------------------
 # Final Year Project - XRF Analysis
@@ -12,7 +12,7 @@
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
-def read_emsa_file(file_name):
+def read_file(file_name):
 # This function takes a string input. This must be either the directory of the
 # data file or the name of the file (if it is in the same directory as the
 # module).
@@ -21,7 +21,7 @@ def read_emsa_file(file_name):
 
     # Open data file.
     data_file = open(file_name, "r")
-
+    
     # Extract lines into list.
     line = data_file.readlines()
     
