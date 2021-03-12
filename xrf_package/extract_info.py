@@ -13,7 +13,7 @@
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
-def extract_headers(list):
+def extract_emsa_headers(list):
 # This function extracts the header information from a .emsa file type. Each
 # line is formatted and stored in a list for output.
     
@@ -47,31 +47,43 @@ def extract_headers(list):
     return header_list, data_loc
 
 def extract_data(list, data_loc):
-# This function extracts the data from the .emsa list and formats it to type
-# float. This is then output to the user.
+# This function extracts the data from the list and formats it to type
+# float. This is then output to the user. The function tries splitting the str
+# into 2 columns. The second array is populated by the end of data list,
+# data[-1], to prevent error if there is only one column in the list. The
+# inputs are the list of strigs, directly from the file, and the location at
+# which to start looking for the data, as an int. The programme reaches the end
+# of file when it can no longer convert to floats, as handled by except. The
+# arrays are returned to the user. The assignment of what they represent
+# should be known by the user (i.e. Energy, spectrum data,
+# fluorescence yield, etc.).
     
     # Create array to hold data.
-    spectrum_data = []
+    array_one = []
+    array_two = []
     
     # Run through list from data_loc to end.
-    for i in range(data_loc + 1, len(list)):
+    for i, val in enumerate(list[data_loc + 1: len(list)]):
     
         # Set data.
-        data = list[i]
+        data = val.split()
         
-        # Check if "End of Data".
-        if "#" in data:
-            # End of data readings. Exit loop.
-            break
+        try:
         
-        else:
-            # Format data.
-            data_formatted = __format_data__(data)
+            # Take data and make each column into number.
+            array_one.append(float("".join(j for j in data[0] if \
+                            (j.isdigit() or j == "." or j == "E" or \
+                            j == "e" or j == "-" or j == "+"))))
             
-            # Append to spectrum_array.
-            spectrum_data.append(data_formatted)
+            array_two.append(float("".join(j for j in data[-1] if \
+                            (j.isdigit() or j == "." or j == "E" or \
+                            j == "e" or j == "-" or j == "+"))))
         
-    return spectrum_data
+        except:
+            # End of data.
+            pass
+        
+    return array_one, array_two
 
 def __header_extraction__(list, i):
 # This function runs the bullk of the extract_headers module.
@@ -124,19 +136,6 @@ def __format_header__(header, info):
         # If can't convert to float, return header & info.
         return header_stripped, info_stripped
 
-def __format_data__(data):
-# Formats data and converts it to type float.
-    
-    # Remove comma from data string and strip of whitespace.
-    data_no_comma = data.replace(",", "")
-    data_stripped = data_no_comma.strip()
-    
-    # Change to type float.
-    data_formatted = float(data_stripped)
-    
-    # Return formatted data.
-    return data_formatted
-
 # -----------------------------------------------------------------------------
 # MAIN
 if __name__ == "__main__":
@@ -145,8 +144,8 @@ if __name__ == "__main__":
             "0.5", "1.111", "64", "0.335", "#END : Test"]
     
     # Call the functions.
-    header_list, data_loc = extract_headers(list)
-    spectrum_data = extract_data(list, data_loc)
+    header_list, data_loc = extract_emsa_headers(list)
+    Energy, spectrum_data = extract_data(list, data_loc)
     
     # Print to the user.
     for i in range(len(header_list)):
