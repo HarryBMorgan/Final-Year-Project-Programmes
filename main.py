@@ -91,10 +91,11 @@ if Energy == spectrum_data:
 # Plot the Energy against the Intensit (spectrum_data).
 print("Plotting spectrum...", end = "\r")
 plt.plot(Energy, spectrum_data)
-plt.xlabel("Energy, keV"); plt.ylabel("Intensity, log-scale")
+plt.xlabel("Energy, keV", fontsize = 20)
+plt.ylabel("Intensity, log-scale", fontsize = 20)
 plt.xlim(0, axis_upper_lim)
 plt.yscale('log')
-plt.title(file_name + ": XRF Data")
+plt.title(file_name + ": XRF Data", fontsize = 20)
 print("Spectrum plotted... 100.00 %")
 plt.show()
 
@@ -137,7 +138,7 @@ for i, val in enumerate(count):
     # Print progress.
     print("Calculating true number of atoms...", \
             '%.2f' %(i / len(count) * 100), "%", end = "\r")
-print("Calculating true nunmber of atoms... 100.00 %")
+print("Calculating true number of atoms... 100.00 %")
 
 # Total number of atoms is calculated.
 Atom_tot = 0
@@ -181,11 +182,11 @@ for i, val in enumerate(count):
     b = '%.2f' %Peak_energy[i]
     c = Flu_yield[i]
     d = Attenuation[i]
-    e = Atom_num[i] / Atom_tot
+    e = Atom_num[i] / Atom_tot * 100
     
     print(a + ": " + str(b) + " keV  : " + str('%.2e' %val) + \
             " :         " + str('%.4f' %c) + "         :   " + str(d) + \
-            " cm\u00b2/g   :" + "    " + str('%.3f' %e) + " %    :")
+            " cm\u00b2/g   :" + "    " + str('%.2f' %e) + " %     :")
 
 # Print information about experimental setup.
 print("")
