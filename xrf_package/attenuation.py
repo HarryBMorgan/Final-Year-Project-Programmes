@@ -19,7 +19,7 @@ from math import exp
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
-def attenuation(File, Energy, X):
+def attenuation(File, Energy):
 # This function calculates the attenuation of the beam through the sample. The
 # inputs are the File name as a string, the Energy of the peak in keV, and the
 # attenuation depth X in cm.
@@ -34,8 +34,12 @@ def attenuation(File, Energy, X):
     # keV to MeV.
     indx = bisect_right(Atten_E, Energy * 1e-3) - 1
     
+    # Define density, Rho, and depth, X.
+    Rho = 4.1 # g/cm**3
+    X = 0.1 # cm
+    
     # Append to list of attenuations.
-    Attenuation = exp(- Atten[indx] * X)
+    Attenuation = exp(- Atten[indx] * Rho * X)
     
     return Attenuation
 
