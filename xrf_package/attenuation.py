@@ -32,14 +32,14 @@ def attenuation(File, Energy):
     
     # Find index of attenuation of beam energy - multiply by 1e-3 to get from
     # keV to MeV.
-    indx = bisect_right(Atten_E, Energy * 1e-3) - 1
+    Indx = bisect_right(Atten_E, Energy * 1e-3) - 1
     
     # Define density, Rho, and depth, X.
     Rho = 4.1 # g/cm**3
     X = 0.1 # cm
     
     # Append to list of attenuations.
-    Attenuation = exp(- Atten[indx] * Rho * X)
+    Attenuation = exp(- Atten[Indx] * Rho * X)
     
     return Attenuation
 

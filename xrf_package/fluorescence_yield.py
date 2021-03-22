@@ -12,8 +12,8 @@
 # -----------------------------------------------------------------------------
 # FUNCTIONS
 def fluorescence_yield(Element, Yield):
-# This function takes the elemental symbol and shell designation (e.g. "Br", 
-# "w1") as type str and returns the fluorescence yield for that element at
+# This function takes the Elemental symbol and shell designation (e.g. "Br", 
+# "w1") as type str and returns the fluorescence yield for that Element at
 # that shell.
 
     Fluorescence_dict = {"Br wk": 0.6275, "Br wl": 0.0195, "Br wm": 3.02e-4, \

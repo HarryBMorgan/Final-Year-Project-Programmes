@@ -13,40 +13,40 @@
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
-def extract_emsa_headers(list):
+def extract_emsa_headers(List):
 # This function extracts the header information from a .emsa file type. Each
 # line is formatted and stored in a list for output.
     
-    # Read every element in list (represents lines from data file).
-    header_list, spectrum_list = [], []
-    for i in range(len(list)):
+    # Read every Element in list (represents lines from data file).
+    Header_list, Spectrum_list = [], []
+    for i in range(len(List)):
         
-        # Check for "#". This means the element is a header.
-        if list[i][0] == "#":
-        # Run through the element and seperate header and info then format.
+        # Check for "#". This means the Element is a header.
+        if List[i][0] == "#":
+        # Run through the Element and seperate header and info then format.
             
             # Run header extraction subroutine.
-            header_new, info_new = __header_extraction__(list, i)
+            Header_new, Info_new = __header_extraction__(List, i)
             
             # Check if header is begining the spectrum data.
-            if "SPECTRUM" in header_new:
+            if "SPECTRUM" in Header_new:
                 
                 # Set location in list of data. Exit function.
-                data_loc = i
+                Data_loc = i
                 break
             
             else:
-            # Not begining of spectrum data, append to header_list.
+            # Not begining of spectrum data, append to Header_list.
                 
-                header_list.append([header_new, info_new])
+                Header_list.append([Header_new, Info_new])
             
-        elif list[i][0] != "#":
+        elif List[i][0] != "#":
             pass
         
     # Pass the data to the user.
-    return header_list, data_loc
+    return Header_list, Data_loc
 
-def extract_data(list, data_loc):
+def extract_data(List, Data_loc):
 # This function extracts the data from the list and formats it to type
 # float. This is then output to the user. The function tries splitting the str
 # into 2 columns. The second array is populated by the end of data list,
@@ -59,23 +59,23 @@ def extract_data(list, data_loc):
 # fluorescence yield, etc.).
     
     # Create array to hold data.
-    array_one = []
-    array_two = []
+    Array_one = []
+    Array_two = []
     
-    # Run through list from data_loc to end.
-    for i, val in enumerate(list[data_loc + 1: len(list)]):
+    # Run through list from Data_loc to end.
+    for i, val in enumerate(List[Data_loc + 1: len(List)]):
     
         # Set data.
-        data = val.split()
+        Data = val.split()
         
         try:
         
             # Take data and make each column into number.
-            array_one.append(float("".join(j for j in data[0] if \
+            Array_one.append(float("".join(j for j in Data[0] if \
                             (j.isdigit() or j == "." or j == "E" or \
                             j == "e" or j == "-" or j == "+"))))
             
-            array_two.append(float("".join(j for j in data[-1] if \
+            Array_two.append(float("".join(j for j in Data[-1] if \
                             (j.isdigit() or j == "." or j == "E" or \
                             j == "e" or j == "-" or j == "+"))))
         
@@ -83,73 +83,73 @@ def extract_data(list, data_loc):
             # End of data.
             pass
         
-    return array_one, array_two
+    return Array_one, Array_two
 
-def __header_extraction__(list, i):
+def __header_extraction__(List, i):
 # This function runs the bullk of the extract_headers module.
     
     # Create temp string lists to be extract header & info.
-    header, info = "", ""
+    Header, Info = "", ""
     
-    # Run through element to extract header name.
+    # Run through Element to extract header name.
     j = 0
-    while list[i][j] != ":":
+    while List[i][j] != ":":
     
         # Append header to header.
-        header += list[i][j]
+        Header += List[i][j]
         
         # Incriment j.
         j += 1
     
-    # Take info from element.
-    for k in range(j, len(list[i])):
+    # Take info from Element.
+    for k in range(j, len(List[i])):
         # Append info to info.
-        info += list[i][k]
+        Info += List[i][k]
     
     # Format header & information.
-    header_new, info_new = __format_header__(header, info)
-    return header_new, info_new
+    Header_new, Info_new = __format_header__(Header, Info)
+    return Header_new, Info_new
 
-def __format_header__(header, info):
+def __format_header__(Header, Info):
 # This function formats the header and its information by removing any unneeded
 # characters & whitespace. it converts info to other data type where required.
     
     # Remove ":" from strings.
-    header_no_colon = header.replace(":", "")
-    info_no_colon = info.replace(":", "")
+    Header_no_colon = Header.replace(":", "")
+    Info_no_colon = Info.replace(":", "")
     
     # Trim the whitespace from the header and its info.
-    header_stripped = header_no_colon.strip()
-    info_stripped = info_no_colon.strip()
+    Header_stripped = Header_no_colon.strip()
+    Info_stripped = Info_no_colon.strip()
     
     # Try converting the info to type float.
     try:
         
         # Try converting to float.
-        info_float = float(info_stripped)
+        Info_float = float(Info_stripped)
         
         # If successful return header & info_float.
-        return header_stripped, info_float
+        return Header_stripped, Info_float
     
     except ValueError:
         
         # If can't convert to float, return header & info.
-        return header_stripped, info_stripped
+        return Header_stripped, Info_stripped
 
 # -----------------------------------------------------------------------------
 # MAIN
 if __name__ == "__main__":
     # Define test input.
-    list = ["#Poop : Yummy!", "##Anna : 21.5", "#SPECTRUM :", \
+    List = ["#Poop : Yummy!", "##Anna : 21.5", "#SPECTRUM :", \
             "0.5", "1.111", "64", "0.335", "#END : Test"]
     
     # Call the functions.
-    header_list, data_loc = extract_emsa_headers(list)
-    Energy, spectrum_data = extract_data(list, data_loc)
+    Header_list, Data_loc = extract_emsa_headers(List)
+    Energy, Spectrum_data = extract_data(List, Data_loc)
     
     # Print to the user.
-    for i in range(len(header_list)):
-        print(header_list[i][0], header_list[i][1])
+    for i in range(len(Header_list)):
+        print(Header_list[i][0], Header_list[i][1])
     
     # Print information to the user.
-    print(spectrum_data)
+    print(Spectrum_data)

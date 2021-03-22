@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# locate_list_element.py
+# locate_list_Element.py
 
 # -----------------------------------------------------------------------------
 # Final Year Project - XRF Analysis
@@ -12,16 +12,16 @@
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
-def locate_list_element(list, element):
-# Search the list for the specified element. Once found it will be returned to
+def locate_list_element(List, Element):
+# Search the list for the specified Element. Once found it will be returned to
 # the user.
-# WARNING! This module's "element" input is case sensitive.
+# WARNING! This module's "Element" input is case sensitive.
 
     try:
     
-        position = [val[-1] for i, val in enumerate(list) if val[0] == element]
+        Position = [val[-1] for i, val in enumerate(List) if val[0] == Element]
         
-        return position[0]
+        return Position[0]
     
     except:
     
@@ -31,13 +31,13 @@ def locate_list_element(list, element):
 # MAIN
 if __name__ == "__main__":
     # Define a test list.
-    list = [["#Poop", "Yummy!"], ["##Anna", 21.5], ["#SPECTRUM", \
+    List = [["#Poop", "Yummy!"], ["##Anna", 21.5], ["#SPECTRUM", \
             "0.5"], ["1.111"], ["64", "0.335"], ["#END", "Test"]]
 
     for i in list: print(i)
     
     # Call the function.
-    header_info = locate_list_element(list, "##Anna")
+    Header_info = Locate_list_element(List, "##Anna")
     
     # Print results.
-    print(header_info)
+    print(Header_info)

@@ -26,10 +26,10 @@ def peak_energy(X_lim, X_data, Y_data):
     b = bisect_right(X_data, X_lim[-1]) - 1
     
     # Find index of max value in Y_data.
-    indx = Y_data[a: b].index(max(Y_data[a: b])) + a
+    Indx = Y_data[a: b].index(max(Y_data[a: b])) + a
     
     # Find associated x_coordinate and return to user.
-    return X_data[indx]
+    return X_data[Indx]
  
 def integrate_peak(X_lim, X_data, Y_data):
 # This function finds the value of the integral below the peak enclosed within
@@ -44,10 +44,10 @@ def integrate_peak(X_lim, X_data, Y_data):
     Y_data_lowered = __remove_baseline__(a, b, X_data, Y_data)
     
     # Integrate using Simpsons Rule from SciPy.
-    count = simps(Y_data_lowered)
+    Count = simps(Y_data_lowered)
     
     # Return the integrated value to the user.
-    return count
+    return Count
 
 def __remove_baseline__(a, b, X_data, Y_data):
 # This function generates a baseline reading of a straight line between the
