@@ -16,6 +16,7 @@
 # MAIN
 # Import the modules.
 import matplotlib.pyplot as plt
+from math import sqrt
 from bisect import bisect_right
 import xrf_package.xrf_package as xrf
 
@@ -27,14 +28,8 @@ import xrf_package.xrf_package as xrf
 # Information for the EDS_1 data.
 file_name = "EDS_1.emsa"
 X_lim = [[1.430, 1.630], [2.260, 2.550], [2.550, 2.750], [4.190, 4.430]]
-Fluorescence_shell = ["w1", "wm", "wk", "w1"]
+Fluorescence_shell = ["wl", "wm", "wk", "wl"]
 axis_upper_lim = 10
-
-# Information for the S1_pt1 data.
-# file_name = "S1-20kV-08nA-x100_pt1.psmsa"
-# X_lim = [[1.41, 1.75], [10.42, 10.86]]
-# Fluorescence_shell = ["w1", "w1"]
-# axis_upper_lim = 20
 
 # Common variables.
 Element = ["Br", "Pb", "Cl", "Cs"]
@@ -60,44 +55,31 @@ XUNITS = xrf.locate_list_element(header_list, "#XUNITS")
 
 # All Energy outputs will be altered to be in units of keV.
 if XUNITS == "eV":
-    
     XPERCHAN *= 1e-3
     OFFSET *= 1e-3
 
 elif XUNITS == "MeV":
-    
     XPERCHAN *= 1e3
     OFFSET *= 1e3
-
-# Print progress.
-print("Extracting data... 100.00 %")
 
 
             # ---           DATA VISUALISATION          --- #
 # Create Energy list if the output from extract_data are equal. (In this case
 # there is no energy column and one is required.)
 if Energy == spectrum_data:
-    
     Energy = []
+    
     for i in range(1, len(spectrum_data) + 1):
-        
         Energy.append(i * XPERCHAN + OFFSET)
-        
-        # Print progress.
-        print("Creating Energy Data...", \
-                '%.2f' %(i / len(spectrum_data) * 100), "%", end = "\r")
-    print("Creating energy data... 100.0 %")
 
-# Plot the Energy against the Intensit (spectrum_data).
-print("Plotting spectrum...", end = "\r")
+# Plot the Energy against the Intensities (spectrum_data).
 plt.plot(Energy, spectrum_data)
 plt.xlabel("Energy, keV", fontsize = 20)
 plt.ylabel("Intensity, log-scale", fontsize = 20)
 plt.xlim(0, axis_upper_lim)
 plt.yscale('log')
 plt.title(file_name + ": XRF Data", fontsize = 20)
-print("Spectrum plotted... 100.00 %")
-plt.show()
+#plt.show()
 
 
             # ---           DATA ANALYSIS           --- #
@@ -105,88 +87,57 @@ plt.show()
 # and attenuation - only if there is information to analyise.
 
 # Integrate over the peak defined using the integrate_peak module.
-count = []
+count, count_err = [], []
 for i, val in enumerate(X_lim):
-    
     count.append(xrf.integrate_peak(val, Energy, spectrum_data))
-    
-    # Print progress.
-    print("Integrating Peaks...", \
-            '%.2f' %(i / len(X_lim) * 100), "%", end = "\r")
-print("Integrating Peaks... 100.0 %")
+    count_err.append(sqrt(count[-1]))
 
 # Find Energy for each peak using the peak_energy module.
 Peak_energy = []
 for i, val in enumerate(X_lim):
-    
     Peak_energy.append(xrf.peak_energy(val, Energy, spectrum_data))
-    
-    # Print progress.
-    print("Finding Peak Energies...", \
-            '%.2f' %(i / len(X_lim) * 100), "%", end = "\r")
-print("Finding Peak Energies... 100.0 %")
 
 # True number of atoms.
-Atom_num, Flu_yield = [], []
+Flu_yield = []
 for i, val in enumerate(count):
-    
-    Flu_yield.append(xrf.fluorescence_yield(Element[i], \
-            Fluorescence_shell[i]))
-    
-    Atom_num.append(val / Flu_yield[-1])
-    
-    # Print progress.
-    print("Calculating true number of atoms...", \
-            '%.2f' %(i / len(count) * 100), "%", end = "\r")
-print("Calculating true number of atoms... 100.00 %")
+    Flu_yield.append(xrf.fluorescence_yield(Element[i], Fluorescence_shell[i]))
+
+Atom_num = []
+for i, val in enumerate(count):
+    Atom_num.append(val / Flu_yield[i])
 
 # Total number of atoms is calculated.
-Atom_tot = 0
-for i in Atom_num: Atom_tot += i
+Atom_tot = sum(Atom_num)
 
-# Get beam energy in MeV from headers to compare to attenuation energy
-# column.
+# % of sample.
+Amount = []
+for i in Atom_num:
+    Amount.append(i / Atom_tot * 100)
+
+# Get beam energy in MeV from headers.
 BEAM = xrf.locate_list_element(header_list, "#BEAMKV   -kV")
 
 # Get attenuation data.
 Attenuation = []
 for i, val in enumerate(Atten_files):
-    
-    # Read in data.
-    Atten_data = xrf.read_file(val)
-    
-    # Extract data.
-    Atten_E, Atten = xrf.extract_data(Atten_data, 0)
-    
-    # Find index of attenuation of beam energy.
-    indx = bisect_right(Atten_E, BEAM * 1e-3) - 1
-    
-    # Append to list of attenuations.
-    Attenuation.append(Atten[indx])
-    
-    # Print progress.
-    print("Calculating attenuation of each elements...", \
-            '%.2f' %(i / len(Atten_files) * 100), "%", end = "\r")
-print("Calculating Attenuation of each element... 100.0 %")
+    Attenuation.append(xrf.attenuation(val, Peak_energy[i], 1))
 
 
             # ---           DATA VISUALISATION          --- #
 # Pring tdata table of results.
 print("")
-print("  :  Energy   :   Int    :   Fluorescence Yield   :   " + \
-        "Attenuation   :  % of Sample  :")
-for i, val in enumerate(count):
+print("  :" + "  Energy   :" + \
+        "        Int       :" + \
+        "   Fluorescence Yield   :" + \
+        "   Attenuation   :" + \
+        "  % of Sample  :")
+for i, val in enumerate(Element):
     
-    # Assign print variables from the various lists.
-    a = Element[i]
-    b = '%.2f' %Peak_energy[i]
-    c = Flu_yield[i]
-    d = Attenuation[i]
-    e = Atom_num[i] / Atom_tot * 100
-    
-    print(a + ": " + str(b) + " keV  : " + str('%.2e' %val) + \
-            " :         " + str('%.4f' %c) + "         :   " + str(d) + \
-            " cm\u00b2/g   :" + "    " + str('%.2f' %e) + " %     :")
+    print(val + ": " + str('%.2f' %Peak_energy[i]) + " keV  : " + \
+            str('%.2e' %count[i]) + " +/- " + str('%.0f' %count_err[i]) + \
+            " :         " + str('%.4f' %Flu_yield[i]) + \
+            "         :   " + str('%.2f' %Attenuation[i]) + " cm\u00b2/g   :" + \
+            "    " + str('%.2f' %Amount[i]) + " %     :")
 
 # Print information about experimental setup.
 print("")
