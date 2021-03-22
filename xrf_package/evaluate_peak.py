@@ -52,12 +52,12 @@ def integrate_peak(X_lim, X_data, Y_data):
 def __remove_baseline__(a, b, X_data, Y_data):
 # This function generates a baseline reading of a straight line between the
 # upper and lower x limits and subtracts it from the Y_data.
-    
-    # Create background seperation line.
-    baseline = linspace(Y_data[a], Y_data[b], len(Y_data[a: b+1]))
-    
-    # Correct Y_data by removing baseline and return to user.
-    return Y_data[a: b+1] - baseline
+
+    # Create baseline.
+    Baseline = linspace(Y_data[a], Y_data[b], len(Y_data[a: b+1]))
+
+    # Subtract Baseline and return to user.
+    return Y_data[a: b+1] - Baseline
 
 # -----------------------------------------------------------------------------
 # MAIN
