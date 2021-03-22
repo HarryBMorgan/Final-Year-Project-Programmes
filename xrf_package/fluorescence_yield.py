@@ -16,12 +16,10 @@ def fluorescence_yield(Element, Yield):
 # "w1") as type str and returns the fluorescence yield for that element at
 # that shell.
 
-    Fluorescence_dict = {"Br wk": 0.618, "Br w1": 3.6e-3, "Br w2": 0.018, \
-                    "Br w3": 0.020, "Pb wk": 0.967, "Pb w1": 0.112, \
-                    "Pb w2": 0.373, "Pb w3": 0.360, "Pb wm": 0.0292, \
-                    "Cl wk": 0.097, "Cl w1": 1.2e-4, "Cl w2": 2.4e-4, \
-                    "Cl w3": 2.4e-4, "Cs wk": 0.897, "Cs w1": 0.049, \
-                    "Cs w2": 0.090, "Cs w3": 0.091}
+    Fluorescence_dict = {"Br wk": 0.6275, "Br wl": 0.0195, "Br wm": 3.02e-4, \
+                    "Pb wk": 0.9634, "Pb wl": 0.369, "Pb wm": 0.0292, \
+                    "Cl wk": 0.09892, "Cl wl": 0.00118, \
+                    "Cs wk": 0.8942, "Cs wl": 0.0938, "Cs wm": 0.00401}
     
     # Find which yield we're talking about and return it to the user.
     return Fluorescence_dict[Element + " " + Yield]
