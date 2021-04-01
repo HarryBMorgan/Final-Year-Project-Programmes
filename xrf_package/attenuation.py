@@ -28,7 +28,7 @@ def attenuation(File, Energy):
     Atten_data = read_file(File)
     
     # Extract data.
-    Atten_E, Atten = extract_data(Atten_data, 0)
+    Atten_E, Atten = extract_data(Atten_data, 2)
     
     # Find index of attenuation of beam energy - multiply by 1e-3 to get from
     # keV to MeV.
