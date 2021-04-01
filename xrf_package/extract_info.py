@@ -13,8 +13,8 @@
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS
-def extract_emsa_headers(List):
-# This function extracts the header information from a .emsa file type. Each
+def extract_msa_headers(List):
+# This function extracts the header information from a .msa file type. Each
 # line is formatted and stored in a list for output.
     
     # Read every Element in list (represents lines from data file).
@@ -26,7 +26,7 @@ def extract_emsa_headers(List):
         # Run through the Element and seperate header and info then format.
             
             # Run header extraction subroutine.
-            Header_new, Info_new = __header_extraction__(List, i)
+            Header_new, Info_new = __msa_header_extraction__(List, i)
             
             # Check if header is begining the spectrum data.
             if "SPECTRUM" in Header_new:
@@ -45,6 +45,57 @@ def extract_emsa_headers(List):
         
     # Pass the data to the user.
     return Header_list, Data_loc
+
+def __msa_header_extraction__(List, i):
+# This function runs the bullk of the extract_headers module.
+    
+    # Create temp string lists to be extract header & info.
+    Header, Info = "", ""
+    
+    # Run through Element to extract header name.
+    j = 0
+    while List[i][j] != ":":
+    
+        # Append header to header.
+        Header += List[i][j]
+        
+        # Incriment j.
+        j += 1
+    
+    # Take info from Element.
+    for k in range(j, len(List[i])):
+        # Append info to info.
+        Info += List[i][k]
+    
+    # Format header & information.
+    Header_new, Info_new = __format_msa_header__(Header, Info)
+    return Header_new, Info_new
+
+def __format_msa_header__(Header, Info):
+# This function formats the header and its information by removing any unneeded
+# characters & whitespace. it converts info to other data type where required.
+    
+    # Remove ":" from strings.
+    Header_no_colon = Header.replace(":", "")
+    Info_no_colon = Info.replace(":", "")
+    
+    # Trim the whitespace from the header and its info.
+    Header_stripped = Header_no_colon.strip()
+    Info_stripped = Info_no_colon.strip()
+    
+    # Try converting the info to type float.
+    try:
+        
+        # Try converting to float.
+        Info_float = float(Info_stripped)
+        
+        # If successful return header & info_float.
+        return Header_stripped, Info_float
+    
+    except ValueError:
+        
+        # If can't convert to float, return header & info.
+        return Header_stripped, Info_stripped
 
 def extract_data(List, Data_loc):
 # This function extracts the data from the list and formats it to type
@@ -81,60 +132,9 @@ def extract_data(List, Data_loc):
         
         except:
             # End of data.
-            pass
+            break
         
     return Array_one, Array_two
-
-def __header_extraction__(List, i):
-# This function runs the bullk of the extract_headers module.
-    
-    # Create temp string lists to be extract header & info.
-    Header, Info = "", ""
-    
-    # Run through Element to extract header name.
-    j = 0
-    while List[i][j] != ":":
-    
-        # Append header to header.
-        Header += List[i][j]
-        
-        # Incriment j.
-        j += 1
-    
-    # Take info from Element.
-    for k in range(j, len(List[i])):
-        # Append info to info.
-        Info += List[i][k]
-    
-    # Format header & information.
-    Header_new, Info_new = __format_header__(Header, Info)
-    return Header_new, Info_new
-
-def __format_header__(Header, Info):
-# This function formats the header and its information by removing any unneeded
-# characters & whitespace. it converts info to other data type where required.
-    
-    # Remove ":" from strings.
-    Header_no_colon = Header.replace(":", "")
-    Info_no_colon = Info.replace(":", "")
-    
-    # Trim the whitespace from the header and its info.
-    Header_stripped = Header_no_colon.strip()
-    Info_stripped = Info_no_colon.strip()
-    
-    # Try converting the info to type float.
-    try:
-        
-        # Try converting to float.
-        Info_float = float(Info_stripped)
-        
-        # If successful return header & info_float.
-        return Header_stripped, Info_float
-    
-    except ValueError:
-        
-        # If can't convert to float, return header & info.
-        return Header_stripped, Info_stripped
 
 # -----------------------------------------------------------------------------
 # MAIN
