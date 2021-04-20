@@ -17,48 +17,28 @@
 # Import the modules.
 import matplotlib.pyplot as plt
 from math import sqrt
-from numpy import linspace
-import xrf_package.xrf_package as xrf
+from numpy import linspace, polyfit
+import xrf_module as xrf
 
 
             # ---           VARIABLES           --- #
 # Contained here are the file names and gates within which the peaks reside.
-# The peak gate limits are in units of keV.
+# The peak gate limits are in units of keV. The fluorescence shell is the shell
+# which the fluorescence is generated. It is required to perform the
+# fluorescence yield correction. The element and attenuation files are required
+# to be written in the order they appear in the spectra.
 
-# EDS_1.emsa
-# File_name = "EDS_1.emsa"
-# X_lim = [[1.42, 1.62], [2.26, 2.55], [2.55, 2.78], [4.19, 4.43]]
-# Fluorescence_shell = ["wl", "wm", "wk", "wl"]
-# Y_scale = "log"
-# Axis_upper_lim = 10
+# To first plot just the spectra all that is needed is the data file name. The
+# plot command under # --- VISUALISATION --- # can be edited for a prefered
+# format to the output.
 
-# S1-20kV-08nA-x100_pt1.psmsa
-# File_name = "S1-20kV-08nA-x100_pt1.psmsa"
-# X_lim = [[1.41, 1.69], [2.26, 2.58]]
-# Fluorescence_shell = ["wl", "wm"]
-# Y_scale = "log"
-# Axis_upper_lim = 20
-
-# FAPbBr_40keV_powdered.Spe
-# File_name = "FAPbBr_40keV_powdered.Spe"
-# Beam_eV = 40 # keV
-# # X_lim = [[], []]
-# Fluorescence_shell = ["wl", "wm"]
-# Y_scale = "linear"
-# Axis_upper_lim = 20
-
-# FAPbBr_40keV_crystal.Spe
-File_name = "FAPbBr_40keV_crystal.Spe"
-Beam_eV = 40 # keV
-# X_lim = [[], []]
-Fluorescence_shell = ["wl", "wm"]
-Y_scale = "linear"
-Axis_upper_lim = 20
-
-# Common variables.
-Element = ["Br", "Pb", "Cl", "Cs"]
-Atten_files = ["Br_attenuation.txt", "Pb_attenuation.txt", 
-                "Cl_attenuation.txt", "Cs_attenuation.txt"]
+# Pb_Calibration_Check.Spe
+File_name = "Pb_Calibration_Check.Spe"
+X_lim = [[10.19, 10.89], [12.08, 13.08]]
+Fluorescence_shell = ["wl", "wl"]
+Element = ["Pb", "Pb"]
+Atten_files = ["Pb_attenuation.txt", "Pb_attenuation.txt"]
+Actual_energy = [10.5515, 12.6137]
 
 
             # ---           EXTRACTION         --- #
@@ -66,7 +46,7 @@ Atten_files = ["Br_attenuation.txt", "Pb_attenuation.txt",
 # sorted and formatted. There is a check for which type the file is as there
 # are different procedures to follow for each.
 
-# Call read_file.py module to get the information from the file.
+# Call read_ file.py module to get the information from the file.
 File_data = xrf.read_file(File_name)
 
 # The extraction for msa type files.
@@ -94,7 +74,7 @@ if "msa" in File_name:
     if Energy == Spectrum_data:
         Energy = []
         
-        for i in range(1, len(Spectrum_data) + 1):
+        for i in range(len(Spectrum_data)):
             Energy.append(i * XPERCHAN + OFFSET)
 
 # The extraction for Spe type files.
@@ -103,18 +83,22 @@ elif "Spe" in File_name:
     Eh, Spectrum_data = xrf.extract_data(File_data, 12)
 
     # Create Energy list.
-    Energy = linspace(0, Beam_eV, len(Spectrum_data))
+    Energy = []
+    for i in range(8191):
+        Energy.append(-0.029029 + i * 0.010367)
 
 
             # ---           VISUALISATION          --- #
 # Plot the Energy against the Intensities (Spectrum_data).
 plt.plot(Energy, Spectrum_data)
-plt.xlabel("Energy, keV", fontsize = 20)
-plt.ylabel("Intensity (" + Y_scale + ")", fontsize = 20)
-plt.xlim(0, Axis_upper_lim)
-plt.ylim(0, max(Spectrum_data) + max(Spectrum_data) / 10)
-plt.yscale(Y_scale)
-plt.title(File_name + ": XRF Data", fontsize = 20)
+plt.xlabel("Energy, keV", fontsize = 12)
+plt.xlim(0, 40)
+plt.ylabel("Intensity (linear)", fontsize = 12)
+plt.yscale("linear")
+plt.ylim(0)
+plt.title(File_name.split(".")[0] + ": XRF Data", fontsize = 12)
+plt.tight_layout()
+# plt.savefig("Output/" + File_name.split(".")[0] + "_Spectrum.PNG")
 plt.show()
 
 
@@ -195,3 +179,30 @@ for i, val in enumerate(Element):
             '%.1s' %":")
     except IndexError:
         break
+
+
+            # ---           RESIDUAL PLOT           --- #
+# This section will be for plotting the residual of the spectra.
+# This is the difference between the measured and actual fluorescence energy.
+
+# Create Residual data.
+Residual = []
+for i, val in enumerate(Actual_energy): Residual.append(val - Peak_energy[i])
+
+# Create line of best fit using numpy.polyfit. Find gradient of Lobf to give
+# to user.
+m, b = polyfit(Actual_energy, Residual, 1)
+Lobf = []
+for i in Actual_energy: Lobf.append(m * i + b)
+Grad = (Lobf[-1] - Lobf[0]) / (Actual_energy[-1] - Actual_energy[0])
+
+plt.scatter(Actual_energy, Residual, marker = "x")
+plt.plot(Actual_energy, Lobf, linestyle = "--", color = "r", label = \
+    "Gradient = %s" %('%.3e' %Grad))
+plt.title(File_name.split(".")[0] + ": Residual Plot", fontsize = 12)
+plt.xlabel("Energy, keV", fontsize = 12)
+plt.ylabel("Residual, keV", fontsize = 12)
+plt.legend()
+plt.tight_layout()
+# plt.savefig("Output/" + File_name.split(".")[0] + "_Residual.PNG")
+plt.show()
