@@ -30,15 +30,15 @@ import xrf_module as xrf
 
 # To first plot just the spectra all that is needed is the data file name. The
 # plot command under # --- VISUALISATION --- # can be edited for a prefered
-# format to the output.
+# format to the output, e.g., log/linear output, title, savefile name, etc.
 
-# Pb_Calibration_Check.Spe
-File_name = "Pb_Calibration_Check.Spe"
-X_lim = [[10.19, 10.89], [12.08, 13.08]]
-Fluorescence_shell = ["wl", "wl"]
-Element = ["Pb", "Pb"]
-Atten_files = ["Pb_attenuation.txt", "Pb_attenuation.txt"]
-Actual_energy = [10.5515, 12.6137]
+# FAPbBr_40keV_powdered.Spe
+File_name = "FAPbBr_40keV_powdered.Spe"
+X_lim = [[10.20, 10.86], [11.54, 12.26]]
+Fluorescence_shell = ["wl", "wk"]
+Element = ["Pb", "Br"]
+Atten_files = ["Pb_attenuation.txt", "Br_attenuation.txt"]
+Actual_energy = [10.5515, 11.8776]
 
 
             # ---           EXTRACTION         --- #
@@ -95,7 +95,6 @@ plt.xlabel("Energy, keV", fontsize = 12)
 plt.xlim(0, 40)
 plt.ylabel("Intensity (linear)", fontsize = 12)
 plt.yscale("linear")
-plt.ylim(0)
 plt.title(File_name.split(".")[0] + ": XRF Data", fontsize = 12)
 plt.tight_layout()
 # plt.savefig("Output/" + File_name.split(".")[0] + "_Spectrum.PNG")
@@ -140,12 +139,13 @@ for i, val in enumerate(Count):
     # Atom_num.append(val / (Flu_yield[i] * Attenuation[i]))
 
 # Ratio of Br to Cl.
-try:
-    X_Br = '%.2f' %(Atom_num[0] / (Atom_num[0] + Atom_num[2]))
-    X_Cl = '%.2f' %(Atom_num[2] / (Atom_num[0] + Atom_num[2]))
-    X = [X_Br, "    ", X_Cl, "    "]
-except IndexError:
-    X = ["    ", "    ", "    ", "    "]
+# Make X with empty strings for each element.
+X = []
+for i in range(len(Element)): X.append("    ")
+
+# Populate last 2 elements with ratio data.
+X[-1] = '%.2f' %(Atom_num[-1] / (Atom_num[-1] + Atom_num[-2]))
+X[-2] = '%.2f' %(Atom_num[-2] / (Atom_num[-1] + Atom_num[-2]))
 
 # Total number of atoms is calculated.
 Atom_tot = sum(Atom_num)
@@ -206,3 +206,6 @@ plt.legend()
 plt.tight_layout()
 # plt.savefig("Output/" + File_name.split(".")[0] + "_Residual.PNG")
 plt.show()
+
+# EXIT COMMAND
+exit = input("Hit any key to end program and exit:")
