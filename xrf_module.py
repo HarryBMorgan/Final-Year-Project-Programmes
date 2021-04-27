@@ -232,7 +232,7 @@ def __remove_baseline__(a, b, X_data, Y_data):
     Baseline = linspace(Y_data[a], Y_data[b], len(Y_data[a: b+1]))
 
     # Subtract Baseline and return to user.
-    return Y_data[a: b+1] - Baseline
+    return Y_data[a: b + 1] - Baseline
 
 # -----------------------------------------------------------------------------
 # FLUORESECNCE YIELD
@@ -279,3 +279,66 @@ def attenuation(File, Energy):
     Attenuation = exp(- Atten[Indx] * Rho * X)
     
     return Attenuation
+
+# -----------------------------------------------------------------------------
+# LEAD - HALIDE RATIO
+# This function calculates the ratio of Pb to Halide in the sample.
+# It checks for Br and Cl and accounts for the case of a mixture of halides.
+# In the event of a mixture of halides being present, the ratio of halides is
+# also calculated and returned to the user.
+
+def lead_halide_ratio(Element_list, Atom_num_list):
+# This function takes a list of the elements in the sample and the number of
+# each atom as list inputs. It checks where the element is in the list and
+# uses the corresponding atom number to calculate the ratio of Pb to halide in
+# the sample. The maximum number of different halides in the sample that this
+# function can handle is 2. Specifically, Br and Cl.
+
+# Returned to the user is a list of strings giving the ratio Pb:Halide.
+# In the event of a mix of halides there is also a string of the halide ratio
+# returned to the user, Br:Cl.
+
+    # Locate Pb in element list.
+    a = Element_list.index("Pb")
+    Pb_num = Atom_num_list[a]
+    
+    # Locate Br in list.
+    b = Element_list.index("Br")
+    Br_num = Atom_num_list[b]
+    
+    # Create Halide_num value.
+    Halide_num = 0
+    Halide_num += Br_num
+
+    # Locate Cl in list if it's present.
+    if "Cl" in Element_list:
+        c = Element_list.index("Cl")
+        Cl_num = Atom_num_list[c]
+        
+        # Create total halide num.
+        Halide_num += Cl_num        
+    
+    # Calculate ratio of Pb to halide (1:3).
+    Tot_num = Pb_num + Halide_num
+    Pb_ratio = Pb_num / Tot_num
+    Halide_ratio = Halide_num / (Tot_num * Pb_ratio)
+    
+    Pb_to_Halide = "%s : Halide ratio = %s : %s" \
+        %(Element_list[a], \
+        str('%.2f' %(Pb_ratio / Pb_ratio)), str('%.2f' %Halide_ratio))
+    
+    # Calculate ratio of Br:Cl.
+    if "Cl" in Element_list:
+        Cl_ratio = Cl_num / Halide_num * Halide_ratio
+        Br_ratio = Br_num / Halide_num * Halide_ratio
+
+        Br_to_Cl = "%s : %s ratio = %s : %s" \
+            %(Element_list[b], Element_list[c], \
+            str('%.2f' %Br_ratio), str('%.2f' %Cl_ratio))
+        
+        # Return values to user.
+        return [Pb_to_Halide, Br_to_Cl]
+
+    elif "Cl" not in Element_list:
+        # Return values to user.
+        return [Pb_to_Halide]
