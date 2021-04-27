@@ -92,7 +92,7 @@ elif "Spe" in File_name:
 # Plot the Energy against the Intensities (Spectrum_data).
 plt.plot(Energy, Spectrum_data)
 plt.xlabel("Energy, keV", fontsize = 12)
-plt.xlim(0, 40)
+plt.xlim(8, 15)
 plt.ylabel("Intensity (linear)", fontsize = 12)
 plt.yscale("linear")
 plt.title(File_name.split(".")[0] + ": XRF Data", fontsize = 12)
@@ -127,25 +127,23 @@ for i, val in enumerate(Atten_files):
 # True number of atoms.
 Flu_yield = []
 for i, val in enumerate(Element):
-    try:
-        Flu_yield.append(xrf.fluorescence_yield(val, Fluorescence_shell[i]))
-    except IndexError:
-        break
+    Flu_yield.append(xrf.fluorescence_yield(val, Fluorescence_shell[i]))
 
+# Cacluate total number of atoms for each element in sample.
+# Flourescence correction.
 Atom_num, Atom_num_err = [], []
 for i, val in enumerate(Count):
     Atom_num.append(val / Flu_yield[i])
     Atom_num_err.append(Atom_num[-1] * Count_err[i])
     # Atom_num.append(val / (Flu_yield[i] * Attenuation[i]))
 
-# Ratio of Br to Cl.
-# Make X with empty strings for each element.
-X = []
-for i in range(len(Element)): X.append("    ")
-
-# Populate last 2 elements with ratio data.
-X[-1] = '%.2f' %(Atom_num[-1] / (Atom_num[-1] + Atom_num[-2]))
-X[-2] = '%.2f' %(Atom_num[-2] / (Atom_num[-1] + Atom_num[-2]))
+# Calculate the ratio of PB:Halide and if its present, Br:Cl.
+Ratio = xrf.lead_halide_ratio(Element, Atom_num)
+if len(Ratio) == 1:
+    print(Ratio[0])
+elif len(Ratio) == 2:
+    print(Ratio[0])
+    print(Ratio[-1])
 
 # Total number of atoms is calculated.
 Atom_tot = sum(Atom_num)
@@ -163,8 +161,7 @@ print("  :" + \
     "       Int        :" + \
     " Fluorescence Yield :" + \
     "  Attenuation  :" + \
-    "  % of Sample  :" + \
-    "  Halide Ratio  :")
+    "  % of Sample  :")
 
 for i, val in enumerate(Element):
     try:
@@ -175,7 +172,6 @@ for i, val in enumerate(Element):
             '%.21s' %(":       " + str('%.4f' %Flu_yield[i]) + "             ") + \
             '%.16s' %(":   " + str('%.2e' %Attenuation[i]) + "               ") + \
             '%.16s' %(":    " + str('%.2f' %Percent[i]) + " %                ") + \
-            '%.17s' %(":      " + str(X[i]) + "                              ") + \
             '%.1s' %":")
     except IndexError:
         break
@@ -189,23 +185,15 @@ for i, val in enumerate(Element):
 Residual = []
 for i, val in enumerate(Actual_energy): Residual.append(val - Peak_energy[i])
 
-# Create line of best fit using numpy.polyfit. Find gradient of Lobf to give
-# to user.
-m, b = polyfit(Actual_energy, Residual, 1)
-Lobf = []
-for i in Actual_energy: Lobf.append(m * i + b)
-Grad = (Lobf[-1] - Lobf[0]) / (Actual_energy[-1] - Actual_energy[0])
-
 plt.scatter(Actual_energy, Residual, marker = "x")
-plt.plot(Actual_energy, Lobf, linestyle = "--", color = "r", label = \
-    "Gradient = %s" %('%.3e' %Grad))
 plt.title(File_name.split(".")[0] + ": Residual Plot", fontsize = 12)
 plt.xlabel("Energy, keV", fontsize = 12)
 plt.ylabel("Residual, keV", fontsize = 12)
+plt.axhline(y = 0, color = "k", label = "y = 0")
 plt.legend()
 plt.tight_layout()
 # plt.savefig("Output/" + File_name.split(".")[0] + "_Residual.PNG")
-plt.show()
+# plt.show()
 
 # EXIT COMMAND
-exit = input("Hit any key to end program and exit:")
+exit = input("Hit ENTER to end program and exit:")
