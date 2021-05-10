@@ -92,9 +92,9 @@ elif "Spe" in File_name:
 # Plot the Energy against the Intensities (Spectrum_data).
 plt.plot(Energy, Spectrum_data)
 plt.xlabel("Energy, keV", fontsize = 12)
-plt.xlim(8, 15)
-plt.ylabel("Intensity (linear)", fontsize = 12)
-plt.yscale("linear")
+# plt.xlim(0, 40)
+plt.ylabel("Intensity (log)", fontsize = 12)
+plt.yscale("log")
 plt.title(File_name.split(".")[0] + ": XRF Data", fontsize = 12)
 plt.tight_layout()
 # plt.savefig("Output/" + File_name.split(".")[0] + "_Spectrum.PNG")
@@ -196,4 +196,4 @@ plt.tight_layout()
 # plt.show()
 
 # EXIT COMMAND
-exit = input("Hit ENTER to end program and exit:")
+Exit = input("Hit ENTER to end program and exit:")
